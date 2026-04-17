@@ -6,9 +6,9 @@ import { Folder, SeedCard } from '../types';
 
 interface Props {
   folders: Folder[];
-  onToggleTask: (cardId: string, task: string) => void;
+  onToggleTask: (cardId: string, index: number) => void;
   onAddCustomTask: (cardId: string, task: string) => void;
-  onDeleteTask: (cardId: string, task: string) => void;
+  onDeleteTask: (cardId: string, index: number) => void;
 }
 
 export const SproutScreen: React.FC<Props> = ({ 
@@ -29,13 +29,11 @@ export const SproutScreen: React.FC<Props> = ({
   [sproutingSeeds, selectedSproutId]);
 
   const getGrowthStage = (card: SeedCard) => {
-    const totalSteps = Math.max(6, card.tasks.length);
     const completed = card.completedTasks?.length || 0;
-    const progress = completed / totalSteps;
     
-    if (progress < 0.4) return { label: '幼芽', color: '#70FF00', stage: 'sprout' as const };
-    if (progress < 1.0) return { label: '开花', color: '#FF0080', stage: 'flower' as const };
-    return { label: '结果', color: '#FFD700', stage: 'fruit' as const };
+    if (completed >= 8) return { label: '结果', color: '#FFD700', stage: 'fruit' as const };
+    if (completed >= 3) return { label: '开花', color: '#FF0080', stage: 'flower' as const };
+    return { label: '幼芽', color: '#70FF00', stage: 'sprout' as const };
   };
 
   return (
@@ -59,9 +57,9 @@ export const SproutScreen: React.FC<Props> = ({
           <div className="grid grid-cols-2 gap-6">
             {sproutingSeeds.map((seed) => {
               const stageInfo = getGrowthStage(seed);
-              const totalSteps = Math.max(6, seed.tasks.length);
+              const totalSteps = seed.tasks.length;
               const completedCount = seed.completedTasks?.length || 0;
-              const progress = (completedCount / totalSteps) * 100;
+              const progress = totalSteps > 0 ? (completedCount / totalSteps) * 100 : 0;
 
               return (
                 <motion.div
@@ -104,14 +102,9 @@ export const SproutScreen: React.FC<Props> = ({
                             {stageInfo.label}
                           </span>
                           <span className="text-white/20 text-[8px] font-black uppercase tracking-[0.2em]">
-                            {completedCount}/{Math.max(6, seed.tasks.length)}
+                            {completedCount}/{seed.tasks.length}
                           </span>
                         </div>
-                        {completedCount < Math.max(6, seed.tasks.length) && seed.completedTasks?.length === seed.tasks.length && (
-                          <span className="text-white/40 text-[7px] font-black uppercase tracking-wider animate-pulse">
-                            还需要 {Math.max(6, seed.tasks.length) - completedCount} 个行动来结果
-                          </span>
-                        )}
                       </div>
                     </div>
                 </motion.div>
@@ -159,7 +152,7 @@ export const SproutScreen: React.FC<Props> = ({
                     <div>
                       <h2 className="text-white text-xl font-black tracking-tight font-display">{selectedSprout.title}</h2>
                       <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">
-                        执行进度 {Math.round((selectedSprout.completedTasks?.length || 0) / Math.max(6, selectedSprout.tasks.length) * 100)}% ({selectedSprout.completedTasks?.length || 0}/{Math.max(6, selectedSprout.tasks.length)})
+                        执行进度 {selectedSprout.tasks.length > 0 ? Math.round((selectedSprout.completedTasks?.length || 0) / selectedSprout.tasks.length * 100) : 0}% ({selectedSprout.completedTasks?.length || 0}/{selectedSprout.tasks.length})
                       </p>
                     </div>
                   </div>
@@ -184,7 +177,7 @@ export const SproutScreen: React.FC<Props> = ({
                     </div>
                     <div className="space-y-3">
                       {selectedSprout.tasks.map((task, i) => {
-                        const isCompleted = selectedSprout.completedTasks?.includes(task);
+                        const isCompleted = selectedSprout.completedTasks?.includes(i.toString());
                         return (
                           <div key={`${selectedSprout.id}-task-${i}`} className="relative group overflow-hidden rounded-2xl">
                             {/* Delete Action (Background) */}
@@ -192,7 +185,7 @@ export const SproutScreen: React.FC<Props> = ({
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onDeleteTask(selectedSprout.id, task);
+                                  onDeleteTask(selectedSprout.id, i);
                                 }}
                                 className="h-full flex items-center gap-2 text-white/90 active:scale-95 transition-transform"
                               >
@@ -212,7 +205,7 @@ export const SproutScreen: React.FC<Props> = ({
                                   ? 'bg-[#1A1115] border-neon-pink/20 text-white/40' 
                                   : 'bg-[#1A1A1A] border-white/5 text-white'
                               }`}
-                              onClick={() => onToggleTask(selectedSprout.id, task)}
+                              onClick={() => onToggleTask(selectedSprout.id, i)}
                             >
                               <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all mt-0.5 ${
                                 isCompleted ? 'bg-neon-pink text-white' : 'bg-white/10 text-white/20'

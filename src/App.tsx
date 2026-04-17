@@ -206,18 +206,20 @@ export default function App() {
     })));
   };
 
-  const handleToggleTask = (cardId: string, task: string) => {
+  const handleToggleTask = (cardId: string, index: number) => {
     setFolders(folders.map(f => ({
       ...f,
       seeds: f.seeds.map(s => {
         if (s.id === cardId) {
-          const completed = s.completedTasks || [];
-          const isCompleted = completed.includes(task);
+          const completedIndices = (s.completedTasks || []).map(t => parseInt(t));
+          const isCompleted = completedIndices.includes(index);
+          const newCompleted = isCompleted 
+            ? completedIndices.filter(i => i !== index)
+            : [...completedIndices, index];
+          
           return {
             ...s,
-            completedTasks: isCompleted 
-              ? completed.filter(t => t !== task)
-              : [...completed, task]
+            completedTasks: newCompleted.map(i => i.toString())
           };
         }
         return s;
@@ -240,15 +242,22 @@ export default function App() {
     })));
   };
 
-  const handleDeleteTask = (cardId: string, task: string) => {
+  const handleDeleteTask = (cardId: string, index: number) => {
     setFolders(folders.map(f => ({
       ...f,
       seeds: f.seeds.map(s => {
         if (s.id === cardId) {
+          const newTasks = s.tasks.filter((_, i) => i !== index);
+          // Update completed indices
+          const completedIndices = (s.completedTasks || []).map(t => parseInt(t));
+          const newCompleted = completedIndices
+            .filter(i => i !== index)
+            .map(i => i > index ? (i - 1).toString() : i.toString());
+
           return {
             ...s,
-            tasks: s.tasks.filter(t => t !== task),
-            completedTasks: s.completedTasks?.filter(t => t !== task)
+            tasks: newTasks,
+            completedTasks: newCompleted
           };
         }
         return s;
