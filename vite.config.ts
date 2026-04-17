@@ -6,7 +6,7 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-<<<<<<< HEAD
+
     plugins: [
       react(),
       tailwindcss(),
@@ -35,9 +35,9 @@ export default defineConfig(({mode}) => {
         },
       }),
     ],
-=======
+
     plugins: [react(), tailwindcss()],
->>>>>>> d2acd22125ccebcfb646cd8e01c0b446dba974b7
+ d2acd22125ccebcfb646cd8e01c0b446dba974b7
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
