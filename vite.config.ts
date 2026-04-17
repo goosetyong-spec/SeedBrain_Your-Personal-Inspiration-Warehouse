@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
+        includeAssets: ['Frame 12.png'],
         manifest: {
           name: 'SeedBrain - Your Personal Inspiration Warehouse',
           short_name: 'SeedBrain',
