@@ -28,7 +28,7 @@ export const CaptureScreen: React.FC<Props> = ({ onCapture, isProcessing }) => {
             <div className="w-16 h-16 rounded-[2rem] bg-neon-pink/10 flex items-center justify-center shadow-2xl shadow-neon-pink/20">
               <Zap className="text-neon-pink" size={32} fill="currentColor" />
             </div>
-            <h1 className="text-white text-4xl font-black tracking-tight font-display">闪念捕获</h1>
+            <h1 className="text-white text-5xl font-display font-black tracking-tighter">闪念捕获</h1>
           </div>
           <p className="text-white/30 font-black text-[10px] uppercase tracking-[0.3em] mt-2">把转瞬即逝的想法交给 AI 分拣</p>
         </header>
